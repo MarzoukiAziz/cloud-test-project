@@ -1,0 +1,12 @@
+{
+  "name": "cloud-test-project",
+  "version": "1.0.0",
+  "description": "Cloud Engineer - Take Home Test",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.1"
+  }
+}

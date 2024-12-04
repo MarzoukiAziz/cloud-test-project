@@ -1,0 +1,55 @@
+# Node.js specific
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+.pnpm-debug.log
+.env
+.env.*
+*.local
+
+# Dependency directories
+bower_components/
+jspm_packages/
+
+# Build output
+dist/
+build/
+coverage/
+tmp/
+temp/
+
+# Production
+node_modules/
+*.tgz
+npm-shrinkwrap.json
+
+# Optional npm cache directory
+.npm/
+
+# Log files
+*.log
+
+# VSCode settings
+.vscode/
+
+# IDE and editor files
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# System files
+ehthumbs.db
+Desktop.ini
+
+# Operating system files
+*.bak
+*.swp
+*.swo
+*.tmp
+*.temp

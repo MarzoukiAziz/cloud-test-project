@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket = "projects-terraform-state-bucket2O24"
-    key    = "ecs/${var.app_name}/terraform.tfstate"
+    key    = "ecs/projects-terraform-state-bucket2O24/terraform.tfstate"
     region = var.region
   }
 }

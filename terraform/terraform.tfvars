@@ -11,5 +11,3 @@ db_instance_type   = "db.t3.small"
 db_name            = "projects_db"
 db_username        = "admin"
 db_password        = "very_secured_password"
-
-terraform_state_bucket = "projects-terraform-state-bucket2O24"

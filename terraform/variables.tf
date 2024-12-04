@@ -4,10 +4,10 @@ variable "region" {
   default     = "eu-west-3"
 }
 
-variable "availability_zone" {
-  description = "The AWS availability zone to create resources in"
-  type        = string
-  default     = "eu-west-3a"
+variable "availability_zones" {
+  description = "The AWS availability zones to create resources in"
+  type        = list(string)
+  default     = ["eu-west-3a", "eu-west-3b"]
 }
 
 variable "app_name" {

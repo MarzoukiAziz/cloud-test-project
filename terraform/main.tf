@@ -5,12 +5,13 @@ terraform {
     region = "eu-west-3"
   }
 }
+
 #############
-##  Step 1: VPC and Networking Resources
+## Step 1: VPC and Networking Resources
 #############
 
 resource "aws_vpc" "main_vpc" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block           = "10.0.0.0/16"
   enable_dns_support   = true
   enable_dns_hostnames = true
   tags = {
@@ -19,21 +20,23 @@ resource "aws_vpc" "main_vpc" {
 }
 
 resource "aws_subnet" "public_subnet" {
+  count                   = 2
   vpc_id                  = aws_vpc.main_vpc.id
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = cidrsubnet("10.0.1.0/24", 3, count.index)
   map_public_ip_on_launch = true
-  availability_zone       = var.availability_zone
+  availability_zone       = element(var.availability_zones, count.index)
   tags = {
-    Name = "ecs-public-subnet"
+    Name = "ecs-public-subnet-${count.index + 1}"
   }
 }
 
 resource "aws_subnet" "private_subnet" {
+  count             = 2
   vpc_id            = aws_vpc.main_vpc.id
-  cidr_block        = "10.0.2.0/24"
-  availability_zone = var.availability_zone
+  cidr_block        = cidrsubnet("10.0.2.0/24", 3, count.index)
+  availability_zone = element(var.availability_zones, count.index)
   tags = {
-    Name = "ecs-private-subnet"
+    Name = "ecs-private-subnet-${count.index + 1}"
   }
 }
 
@@ -58,7 +61,8 @@ resource "aws_route_table" "public_rt" {
 }
 
 resource "aws_route_table_association" "public_subnet_assoc" {
-  subnet_id      = aws_subnet.public_subnet.id
+  count          = 2
+  subnet_id      = aws_subnet.public_subnet[count.index].id
   route_table_id = aws_route_table.public_rt.id
 }
 
@@ -93,7 +97,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 }
 
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "${var.app_name}-ecs-execution-role"
+  name               = "${var.app_name}-ecs-execution-role"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -141,14 +145,13 @@ resource "aws_ecs_task_definition" "ecs_task" {
 DEFINITION
 }
 
-
 #############
 ## Step 3: RDS Database
 #############
 
 resource "aws_db_subnet_group" "db_subnet_group" {
   name       = "db-subnet-group"
-  subnet_ids = [aws_subnet.private_subnet.id]
+  subnet_ids = aws_subnet.private_subnet[*].id
 
   tags = {
     Name = "db-subnet-group"
@@ -156,23 +159,22 @@ resource "aws_db_subnet_group" "db_subnet_group" {
 }
 
 resource "aws_db_instance" "db_instance" {
-  allocated_storage    = 20
-  engine               = "postgres"
-  engine_version       = "13.4"
-  instance_class       = var.db_instance_type
-  name                 = var.db_name
-  username             = var.db_username
-  password             = var.db_password
+  allocated_storage      = 20
+  engine                 = "postgres"
+  engine_version         = "16.6"
+  instance_class         = var.db_instance_type
+  db_name                = var.db_name
+  username               = var.db_username
+  password               = var.db_password
   vpc_security_group_ids = [aws_security_group.ecs_sg.id]
-  db_subnet_group_name = aws_db_subnet_group.db_subnet_group.name
-  publicly_accessible  = false
-  skip_final_snapshot  = true
+  db_subnet_group_name   = aws_db_subnet_group.db_subnet_group.name
+  publicly_accessible    = false
+  skip_final_snapshot    = true
 
   tags = {
     Name = "ecs-db-instance"
   }
 }
-
 
 #############
 ## Step 4: Load Balancer and ECS Service
@@ -183,14 +185,15 @@ resource "aws_lb" "ecs_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.ecs_sg.id]
-  subnets            = [aws_subnet.public_subnet.id]
+  subnets            = aws_subnet.public_subnet[*].id
 }
 
 resource "aws_lb_target_group" "ecs_target_group" {
-  name     = "${var.app_name}-target-group"
-  port     = var.app_port
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.main_vpc.id
+  name        = "${var.app_name}-target-group"
+  port        = var.app_port
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main_vpc.id
+  target_type = "ip"
 }
 
 resource "aws_lb_listener" "ecs_listener" {
@@ -204,6 +207,7 @@ resource "aws_lb_listener" "ecs_listener" {
   }
 }
 
+
 resource "aws_ecs_service" "ecs_service" {
   name            = "${var.app_name}-service"
   cluster         = aws_ecs_cluster.ecs_cluster.id
@@ -212,7 +216,7 @@ resource "aws_ecs_service" "ecs_service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets         = [aws_subnet.public_subnet.id, aws_subnet.private_subnet.id]
+    subnets         = concat(aws_subnet.public_subnet[*].id, aws_subnet.private_subnet[*].id)
     security_groups = [aws_security_group.ecs_sg.id]
   }
 

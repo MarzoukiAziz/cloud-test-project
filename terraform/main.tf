@@ -2,7 +2,7 @@ terraform {
   backend "s3" {
     bucket = "projects-terraform-state-bucket2O24"
     key    = "ecs/projects-terraform-state-bucket2O24/terraform.tfstate"
-    region = var.region
+    region = "eu-west-3"
   }
 }
 #############

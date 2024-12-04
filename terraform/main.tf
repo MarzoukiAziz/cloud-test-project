@@ -28,11 +28,13 @@ resource "aws_iam_role" "ecs_task_execution_role" {
       }
     ]
   })
-
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-  ]
 }
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
 
 resource "aws_ecs_task_definition" "task" {
   family                   = var.app_name
@@ -66,7 +68,7 @@ resource "aws_ecs_service" "service" {
   network_configuration {
     subnets         = var.subnet_ids
     assign_public_ip = true
-    security_groups = ["sg-098d8e07dc8df4f85"]
+    security_groups = ["sg-00d54fc40e559540d"]
   }
 
   load_balancer {
@@ -80,7 +82,7 @@ resource "aws_lb" "app_lb" {
   name               = "${var.app_name}-lb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = ["sg-098d8e07dc8df4f85"]
+  security_groups    = ["sg-00d54fc40e559540d"]
   subnets            = var.subnet_ids
 }
 

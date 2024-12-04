@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket = "terraform-state-bucket"
-    key    = "ecs/cloud-test-project-repo/terraform.tfstate"
+    key    = "ecs/cloud-test-project/terraform.tfstate"
     region = "eur-west-3"
   }
 }
@@ -44,7 +44,7 @@ resource "aws_ecs_task_definition" "task" {
   container_definitions = jsonencode([
     {
       name          = var.app_name
-      image         = "864899850389.dkr.ecr.eu-west-3.amazonaws.com/cloud-test-project-repo:latest"
+      image         = "864899850389.dkr.ecr.eu-west-3.amazonaws.com/cloud-test-project:latest"
       essential     = true
       portMappings  = [
         {

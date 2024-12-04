@@ -1,4 +1,4 @@
-region      = "eur-west-3"
+region      = "eu-west-3"
 ecs_cluster_name = "cloud-test-project-cluster"
 app_name         = "cloud-test-project"
 vpc_id      = "vpc-0420c572de066ad13"

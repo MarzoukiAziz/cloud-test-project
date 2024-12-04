@@ -45,16 +45,16 @@ resource "aws_ecs_task_definition" "task" {
 
   container_definitions = jsonencode([
     {
-      name          = var.app_name
-      image         = "864899850389.dkr.ecr.eu-west-3.amazonaws.com/cloud-test-project:latest"
-      essential     = true
-      portMappings  = [
-        {
-          containerPort = 3000
-          hostPort      = 3000
-        }
-      ]
-    }
+    name          = var.app_name
+    image         = "864899850389.dkr.ecr.eu-west-3.amazonaws.com/cloud-test-project:latest"
+    essential     = true
+    portMappings  = [
+      {
+        containerPort = 3000
+        hostPort      = 3000
+      }
+    ]
+  }
   ])
 }
 
@@ -69,38 +69,5 @@ resource "aws_ecs_service" "service" {
     subnets         = var.subnet_ids
     assign_public_ip = true
     security_groups = ["sg-00d54fc40e559540d"]
-  }
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.app_target_group.arn
-    container_name   = var.app_name
-    container_port   = 3000
-  }
-}
-
-resource "aws_lb" "app_lb" {
-  name               = "${var.app_name}-lb"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = ["sg-00d54fc40e559540d"]
-  subnets            = var.subnet_ids
-}
-
-resource "aws_lb_target_group" "app_target_group" {
-  name        = "${var.app_name}-tg"
-  port        = 3000
-  protocol    = "HTTP"
-  vpc_id      = var.vpc_id
-  target_type = "ip"
-}
-
-resource "aws_lb_listener" "app_listener" {
-  load_balancer_arn = aws_lb.app_lb.arn
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.app_target_group.arn
   }
 }

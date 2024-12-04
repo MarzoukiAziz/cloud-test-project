@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "terraform-state-bucket"
+    bucket = "test2024-terraform-state-bucket"
     key    = "ecs/cloud-test-project/terraform.tfstate"
     region = "eu-west-3"
   }

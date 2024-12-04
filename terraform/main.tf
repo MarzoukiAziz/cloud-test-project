@@ -30,11 +30,64 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   })
 }
 
+resource "aws_iam_policy" "ecs_task_dynamodb_s3_policy" {
+  name        = "ecsTaskDynamoDBS3Policy"
+  description = "Policy for ECS task to access DynamoDB and S3"
+  policy      = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = [
+          "dynamodb:*"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          "arn:aws:s3:::test-geo-files-bucket",
+          "arn:aws:s3:::test-geo-files-bucket/*"
+        ]
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+resource "aws_iam_role_policy_attachment" "ecs_task_custom_policy" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = aws_iam_policy.ecs_task_dynamodb_s3_policy.arn
+}
+
+resource "aws_s3_bucket" "geo_files" {
+  bucket = "test-geo-files-bucket"
+
+  versioning {
+    enabled = true
+  }
+}
+
+resource "aws_dynamodb_table" "geo_files_table" {
+  name           = "GeoFilesTable"
+  billing_mode   = "PAY_PER_REQUEST"
+  hash_key       = "FileId"
+
+  attribute {
+    name = "FileId"
+    type = "S"
+  }
+}
 
 resource "aws_ecs_task_definition" "task" {
   family                   = var.app_name
@@ -45,16 +98,26 @@ resource "aws_ecs_task_definition" "task" {
 
   container_definitions = jsonencode([
     {
-    name          = var.app_name
-    image         = "864899850389.dkr.ecr.eu-west-3.amazonaws.com/cloud-test-project:latest"
-    essential     = true
-    portMappings  = [
-      {
-        containerPort = 3000
-        hostPort      = 3000
-      }
-    ]
-  }
+      name          = var.app_name
+      image         = "864899850389.dkr.ecr.eu-west-3.amazonaws.com/cloud-test-project:latest"
+      essential     = true
+      portMappings  = [
+        {
+          containerPort = 3000
+          hostPort      = 3000
+        }
+      ]
+      environment = [
+        {
+          name  = "DYNAMODB_TABLE"
+          value = aws_dynamodb_table.geo_files_table.name
+        },
+        {
+          name  = "S3_BUCKET"
+          value = aws_s3_bucket.geo_files.bucket
+        }
+      ]
+    }
   ])
 }
 

@@ -33,7 +33,7 @@ jobs:
         env:
           ECR_REGISTRY: 864899850389.dkr.ecr.eu-west-3.amazonaws.com
           ECR_REPOSITORY: projects-repo
-          IMAGE_TAG: latest
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
@@ -50,3 +50,10 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: ./terraform
+
+      - name: Force ECS Service Deployment
+        run: |
+          aws ecs update-service \
+            --cluster development-server-cluster \
+            --service development-server-service \
+            --force-new-deployment

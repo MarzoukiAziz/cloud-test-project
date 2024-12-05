@@ -39,7 +39,7 @@ resource "aws_security_group" "projects-rds-sg" {
 }
 
 resource "aws_db_instance" "projects-rds" {
-  identifier              = "projects-db-${var.ENVIRONMENT}"
+  identifier              = "projects-rds-${var.ENVIRONMENT}"
   allocated_storage       = var.PROJECTS_RDS_ALLOCATED_STORAGE
   storage_type            = "gp2"
   engine                  = var.PROJECTS_RDS_ENGINE
@@ -52,6 +52,7 @@ resource "aws_db_instance" "projects-rds" {
   vpc_security_group_ids  = [aws_security_group.projects-rds-sg.id]
   db_subnet_group_name    = aws_db_subnet_group.projects-rds-subnet-group.name
   multi_az                = "false"
+  db_name                 = "projects-db-${var.ENVIRONMENT}"
 }
 
 output "rds_prod_endpoint" {

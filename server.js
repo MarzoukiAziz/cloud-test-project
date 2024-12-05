@@ -16,20 +16,16 @@ const projectRoutes = require('./routes/projectRoutes');
 app.use('/projects', projectRoutes);
 
 app.get('/test', (req, res) => {
-  res.send(environment + ' n3wdo men jdid');
+  res.send('env: ' + environment + ' db host : ' + process.env.DB_HOST);
 });
 
-// (async () => {
-//   try {
-//     await createTable();
-//     app.listen(PORT, () => {
-//       console.log(`Server is running on Port ${PORT}`);
-//     });
-//   } catch (error) {
-//     console.error('Failed to start server:', error);
-//   }
-// })();
-
-app.listen(PORT, () => {
-  console.log(`Server is running on Port ${PORT}`);
-});
+(async () => {
+  try {
+    await createTable();
+  } catch (error) {
+    console.error('Failed to start server:', error);
+  }
+  app.listen(PORT, () => {
+    console.log(`Server is running on Port ${PORT}`);
+  });
+})();

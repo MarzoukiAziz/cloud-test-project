@@ -16,7 +16,7 @@ const projectRoutes = require('./routes/projectRoutes');
 app.use('/projects', projectRoutes);
 
 app.get('/test', (req, res) => {
-  res.send(environment + ' yezzi ezzide ' + process.env.DB_HOST);
+  res.send(environment + ' yzezezzi ezzide ' + process.env.DB_HOST);
 });
 
 (async () => {

@@ -12,7 +12,7 @@ const projectRoutes = require('./routes/projectRoutes');
 app.use('/projects', projectRoutes);
 
 app.get('/test', (req, res) => {
-  res.send('Ched Its working :)');
+  res.send('Ched Its working :) ' + process.env.DB_HOST);
 });
 
 (async () => {

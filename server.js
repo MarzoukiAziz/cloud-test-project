@@ -18,10 +18,10 @@ app.get('/test', (req, res) => {
 (async () => {
   try {
     await createTable();
-    app.listen(PORT, () => {
-      console.log(`Server is running on Port ${PORT}`);
-    });
   } catch (error) {
     console.error('Failed to start server:', error);
   }
+  app.listen(PORT, () => {
+    console.log(`Server is running on Port ${PORT}`);
+  });
 })();

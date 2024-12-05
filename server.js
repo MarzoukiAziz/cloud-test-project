@@ -11,6 +11,10 @@ app.use(express.json());
 const projectRoutes = require('./routes/projectRoutes');
 app.use('/projects', projectRoutes);
 
+app.get('/test', (req, res) => {
+  res.send('Its working :)');
+});
+
 (async () => {
   try {
     await createTable();

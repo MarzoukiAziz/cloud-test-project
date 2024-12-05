@@ -1,8 +1,3 @@
-variable "SSH_CIDR_WEB_SERVER" {
-  type    = string
-  default = "0.0.0.0/0"
-}
-
 variable "INSTANCE_TYPE" {
   default = "t2.micro"
 }
@@ -16,11 +11,6 @@ variable "ENVIRONMENT" {
   description = "AWS VPC Environment Name"
   type        = string
   default     = "Development"
-}
-
-variable "public_key_path" {
-  description = "Public key path"
-  default     = "~/.ssh/levelup_key.pub"
 }
 
 variable "vpc_private_subnet1" {

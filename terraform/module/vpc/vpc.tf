@@ -64,22 +64,6 @@ resource "aws_internet_gateway" "projects_igw" {
   }
 }
 
-# ELastic IP for NAT Gateway
-resource "aws_eip" "projects_nat_eip" {
-  vpc        = true
-  depends_on = [aws_internet_gateway.projects_igw]
-}
-
-# NAT gateway for private ip address
-resource "aws_nat_gateway" "projects_ngw" {
-  allocation_id = aws_eip.projects_nat_eip.id
-  subnet_id     = aws_subnet.projects_vpc_public_subnet_1.id
-  depends_on    = [aws_internet_gateway.projects_igw]
-  tags = {
-    Name = "${var.ENVIRONMENT}-projects-vpc-NAT-gateway"
-  }
-}
-
 # Route Table for public Architecture
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.projects_vpc.id
@@ -93,19 +77,6 @@ resource "aws_route_table" "public" {
   }
 }
 
-# Route table for Private subnets
-resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.projects_vpc.id
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.projects_ngw.id
-  }
-
-  tags = {
-    Name = "${var.ENVIRONMENT}-projects-private-route-table"
-  }
-}
-
 # Route Table association with public subnets
 resource "aws_route_table_association" "to_public_subnet1" {
   subnet_id      = aws_subnet.projects_vpc_public_subnet_1.id
@@ -115,17 +86,6 @@ resource "aws_route_table_association" "to_public_subnet2" {
   subnet_id      = aws_subnet.projects_vpc_public_subnet_2.id
   route_table_id = aws_route_table.public.id
 }
-
-# Route table association with private subnets
-resource "aws_route_table_association" "to_private_subnet1" {
-  subnet_id      = aws_subnet.projects_vpc_private_subnet_1.id
-  route_table_id = aws_route_table.private.id
-}
-resource "aws_route_table_association" "to_private_subnet2" {
-  subnet_id      = aws_subnet.projects_vpc_private_subnet_2.id
-  route_table_id = aws_route_table.private.id
-}
-
 provider "aws" {
   region = var.AWS_REGION
 }
@@ -153,5 +113,5 @@ output "public_subnet1_id" {
 
 output "public_subnet2_id" {
   description = "Subnet ID"
-  value       = aws_subnet.projects_vpc_private_subnet_2.id
+  value       = aws_subnet.projects_vpc_public_subnet_2.id
 }

@@ -1,14 +1,23 @@
+require('dotenv').config();
 const express = require('express');
+const { createTable } = require('./db');
+
 const app = express();
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-  res.send('Lets gooooo');
-});
-app.get('/test', (req, res) => {
-  res.send('Lets gdsooooo');
-});
+app.use(express.json());
 
-app.listen(PORT, () => {
-  console.log(`teST Server is running on port ${PORT}`);
-});
+// Routes
+const projectRoutes = require('./routes/projectRoutes');
+app.use('/projects', projectRoutes);
+
+(async () => {
+  try {
+    await createTable();
+    app.listen(PORT, () => {
+      console.log(`Server is running on Port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+  }
+})();

@@ -7,6 +7,12 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.21.1"
+    "@mapbox/geojson-merge": "^1.1.1",
+    "@turf/turf": "^7.1.0",
+    "axios": "^1.7.9",
+    "body-parser": "^1.20.3",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.1",
+    "pg": "^8.13.1"
   }
 }

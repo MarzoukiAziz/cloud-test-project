@@ -12,11 +12,11 @@ variable "PUBLICLY_ACCESSIBLE" {
 }
 
 variable "PROJECTS_RDS_USERNAME" {
-  default = "testdb"
+  default = "projects_admin"
 }
 
 variable "PROJECTS_RDS_PASSWORD" {
-  default = "testdb12345"
+  default = "projects_admin_password"
 }
 
 variable "PROJECTS_RDS_ALLOCATED_STORAGE" {

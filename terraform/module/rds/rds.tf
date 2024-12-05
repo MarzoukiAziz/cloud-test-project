@@ -15,12 +15,12 @@ resource "aws_db_subnet_group" "projects-rds-subnet-group" {
 resource "aws_security_group" "projects-rds-sg" {
 
   name        = "${var.ENVIRONMENT}-projects-rds-sg"
-  description = "Created by LevelUp"
+  description = "projects-rds-sg"
   vpc_id      = var.vpc_id
 
   ingress {
-    from_port   = 3306
-    to_port     = 3306
+    from_port   = 5432
+    to_port     = 5432
     protocol    = "tcp"
     cidr_blocks = ["${var.RDS_CIDR}"]
 
@@ -39,7 +39,7 @@ resource "aws_security_group" "projects-rds-sg" {
 }
 
 resource "aws_db_instance" "projects-rds" {
-  identifier              = "${var.ENVIRONMENT}-projects-rds"
+  identifier              = "projects-db-${var.ENVIRONMENT}"
   allocated_storage       = var.PROJECTS_RDS_ALLOCATED_STORAGE
   storage_type            = "gp2"
   engine                  = var.PROJECTS_RDS_ENGINE

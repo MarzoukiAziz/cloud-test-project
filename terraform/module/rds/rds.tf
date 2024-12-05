@@ -1,6 +1,6 @@
 #Define Subnet Group for RDS Service
 resource "aws_db_subnet_group" "projects-rds-subnet-group" {
-  name        = "${var.ENVIRONMENT}-projects-db-snet"
+  name        = "${var.ENVIRONMENT}-projects-rds-snet"
   description = "Allowed subnets for DB cluster instances"
   subnet_ids = [
     "${var.vpc_private_subnet1}",
@@ -52,7 +52,7 @@ resource "aws_db_instance" "projects-rds" {
   vpc_security_group_ids  = [aws_security_group.projects-rds-sg.id]
   db_subnet_group_name    = aws_db_subnet_group.projects-rds-subnet-group.name
   multi_az                = "false"
-  db_name                 = "projects-db-${var.ENVIRONMENT}"
+  db_name                 = "projects-db"
 }
 
 output "rds_prod_endpoint" {

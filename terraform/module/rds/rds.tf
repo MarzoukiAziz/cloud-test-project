@@ -52,7 +52,7 @@ resource "aws_db_instance" "projects-rds" {
   vpc_security_group_ids  = [aws_security_group.projects-rds-sg.id]
   db_subnet_group_name    = aws_db_subnet_group.projects-rds-subnet-group.name
   multi_az                = "false"
-  db_name                 = "projects-db"
+  db_name                 = "projectsdb"
 }
 
 output "rds_prod_endpoint" {

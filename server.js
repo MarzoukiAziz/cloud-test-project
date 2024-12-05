@@ -15,8 +15,13 @@ dotenv.config({ path: `.env.${environment}` });
 const projectRoutes = require('./routes/projectRoutes');
 app.use('/projects', projectRoutes);
 
-app.get('/test', (req, res) => {
-  res.send('env: ' + environment + ' db host : ' + process.env.DB_HOST);
+app.get('/test', async (req, res) => {
+  try {
+    await createTable();
+  } catch (error) {
+    res.send('Failed create db', error);
+  }
+  res.send('hana bcg ncho jaw' + process.env.DB_HOST);
 });
 
 (async () => {

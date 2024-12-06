@@ -64,6 +64,6 @@ jobs:
       - name: Force ECS Service Deployment
         run: |
           aws ecs update-service \
-            --cluster development-server-cluster \  # Name of the ECS cluster
-            --service development-server-service \  # Name of the ECS service
-            --force-new-deployment  # Forces ECS to deploy a new task set
+            --cluster development-server-cluster \
+            --service development-server-service \
+            --force-new-deployment

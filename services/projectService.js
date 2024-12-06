@@ -48,6 +48,8 @@ const checkIntersection = async (projectId1, projectId2) => {
 
   const geo1 = result1.rows[0].perimeter;
   const geo2 = result2.rows[0].perimeter;
+
+  // Check if two geometries (geo1 and geo2) intersect and return true or false
   return turf.booleanIntersects(geo1, geo2);
 };
 
@@ -95,8 +97,13 @@ const getDepartment = async (id) => {
     throw new Error('Project not found');
   }
 
+  // Extract the perimeter geometry from the query result
   const geo = result.rows[0].perimeter;
+
+  // Calculate the center point of the perimeter geometry
   const center = turf.center(geo);
+
+  // Get the department code using the coordinates of the center point
   const departmentCode = await getDepartmentFromCoordinates(
     center.geometry.coordinates
   );
@@ -104,8 +111,10 @@ const getDepartment = async (id) => {
   return departmentCode;
 };
 
-async function getDepartmentFromCoordinates([longitude, latitude]) {
+// Fetch the department code from an external API using latitude and longitude
+const getDepartmentFromCoordinates = async ([longitude, latitude]) => {
   try {
+    // Send GET request to the department API with the coordinates
     const response = await axios.get(process.env.DEPARTEMENT_API, {
       params: {
         lat: latitude,
@@ -115,6 +124,7 @@ async function getDepartmentFromCoordinates([longitude, latitude]) {
       },
     });
 
+    // Check if the response contains department data and return the code
     if (response.data.length > 0 && response.data[0].departement) {
       return parseInt(response.data[0].departement.code, 10);
     } else {
@@ -124,7 +134,7 @@ async function getDepartmentFromCoordinates([longitude, latitude]) {
     console.error('Error fetching department:', error.message);
     throw error;
   }
-}
+};
 
 module.exports = {
   getAllProjects,

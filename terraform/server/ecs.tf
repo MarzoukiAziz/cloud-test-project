@@ -1,3 +1,4 @@
+# Module declaration for creating RDS instance
 module "projects-rds" {
   source              = "../module/rds"
   ENVIRONMENT         = var.ENVIRONMENT
@@ -114,6 +115,8 @@ resource "aws_lb_listener" "server_listener" {
     type             = "forward"
   }
 }
+
+# Display the DNS name of the load balancer
 output "load_balancer_output" {
   description = "Load Balancer"
   value       = aws_lb.projects_load_balancer.dns_name

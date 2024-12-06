@@ -1,3 +1,4 @@
+# Create a security group for the ALB that allows HTTP and HTTPS traffic and permits all outbound traffic
 resource "aws_security_group" "projects_server_alb" {
   tags = {
     Name = "${var.ENVIRONMENT}-projects_server_ALB"

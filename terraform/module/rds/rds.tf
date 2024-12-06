@@ -38,6 +38,7 @@ resource "aws_security_group" "projects-rds-sg" {
   }
 }
 
+# Define the RDS Instance
 resource "aws_db_instance" "projects-rds" {
   identifier              = "projects-rds-${var.ENVIRONMENT}"
   allocated_storage       = var.PROJECTS_RDS_ALLOCATED_STORAGE
@@ -55,6 +56,7 @@ resource "aws_db_instance" "projects-rds" {
   db_name                 = "projectsdb"
 }
 
+# Output the endpoint of the RDS instance for reference
 output "rds_prod_endpoint" {
   value = aws_db_instance.projects-rds.endpoint
 }

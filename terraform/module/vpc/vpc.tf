@@ -1,4 +1,4 @@
-
+# Retrieve the list of available AWS Availability Zones in the current region
 data "aws_availability_zones" "available" {
   state = "available"
 }
@@ -25,6 +25,7 @@ resource "aws_subnet" "projects_vpc_public_subnet_1" {
     Name = "${var.ENVIRONMENT}-projects-vpc-public-subnet-1"
   }
 }
+
 #public Subnet 2
 resource "aws_subnet" "projects_vpc_public_subnet_2" {
   vpc_id                  = aws_vpc.projects_vpc.id
@@ -36,6 +37,8 @@ resource "aws_subnet" "projects_vpc_public_subnet_2" {
   }
 }
 
+# Private subnets
+
 # private subnet 1
 resource "aws_subnet" "projects_vpc_private_subnet_1" {
   vpc_id            = aws_vpc.projects_vpc.id
@@ -45,6 +48,7 @@ resource "aws_subnet" "projects_vpc_private_subnet_1" {
     Name = "${var.ENVIRONMENT}-projects-vpc-private-subnet-1"
   }
 }
+
 # private subnet 2
 resource "aws_subnet" "projects_vpc_private_subnet_2" {
   vpc_id            = aws_vpc.projects_vpc.id
@@ -86,6 +90,8 @@ resource "aws_route_table_association" "to_public_subnet2" {
   subnet_id      = aws_subnet.projects_vpc_public_subnet_2.id
   route_table_id = aws_route_table.public.id
 }
+
+# Configure the AWS provider
 provider "aws" {
   region = var.AWS_REGION
 }

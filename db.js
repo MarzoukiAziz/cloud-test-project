@@ -1,6 +1,6 @@
-const { Pool } = require('pg');
+const { Client } = require('pg');
 
-const pool = new Pool({
+const client = new Client({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   database: process.env.DB_DATABASE,
@@ -8,7 +8,16 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-// Function to create a table
+client
+  .connect()
+  .then(async () => {
+    console.log('Connected to PostgreSQL');
+    await createTable();
+  })
+  .catch((err) => {
+    console.error("Can't connect to PostgreSQL:", err.stack);
+  });
+
 const createTable = async () => {
   const createTableQuery = `
       CREATE TABLE IF NOT EXISTS projects (
@@ -19,15 +28,15 @@ const createTable = async () => {
     `;
 
   try {
-    if (pool.query) {
-      await pool.query(createTableQuery);
+    if (client.query) {
+      await client.query(createTableQuery);
       console.log('Table "projects" created or already exists.');
     } else {
-      throw new Error('Database pool is not configured correctly.');
+      throw new Error('Database client is not configured correctly.');
     }
   } catch (err) {
     console.error('Error creating table:', err.stack);
   }
 };
 
-module.exports = { pool, createTable };
+module.exports = { client };

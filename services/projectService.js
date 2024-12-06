@@ -1,15 +1,15 @@
-const { pool } = require('../db');
+const { client } = require('../db');
 const turf = require('@turf/turf');
 var geojsonMerge = require('@mapbox/geojson-merge');
 const axios = require('axios');
 
 const getAllProjects = async () => {
-  const result = await pool.query('SELECT * FROM projects');
+  const result = await client.query('SELECT * FROM projects');
   return result.rows;
 };
 
 const createProject = async ({ name, perimeter }) => {
-  const result = await pool.query(
+  const result = await client.query(
     'INSERT INTO projects (name, perimeter) VALUES ($1, $2) RETURNING *',
     [name, JSON.stringify(perimeter)]
   );
@@ -17,7 +17,7 @@ const createProject = async ({ name, perimeter }) => {
 };
 
 const deleteProject = async (id) => {
-  const result = await pool.query(
+  const result = await client.query(
     'DELETE FROM projects WHERE id = $1 RETURNING *',
     [id]
   );
@@ -25,7 +25,7 @@ const deleteProject = async (id) => {
 };
 
 const renameProject = async (id, name) => {
-  const result = await pool.query(
+  const result = await client.query(
     'UPDATE projects SET name = $1 WHERE id = $2 RETURNING *',
     [name, id]
   );
@@ -33,11 +33,11 @@ const renameProject = async (id, name) => {
 };
 
 const checkIntersection = async (projectId1, projectId2) => {
-  const result1 = await pool.query(
+  const result1 = await client.query(
     'SELECT perimeter FROM projects WHERE id = $1',
     [projectId1]
   );
-  const result2 = await pool.query(
+  const result2 = await client.query(
     'SELECT perimeter FROM projects WHERE id = $1',
     [projectId2]
   );
@@ -53,11 +53,11 @@ const checkIntersection = async (projectId1, projectId2) => {
 
 const mergeProjects = async (projectId1, projectId2) => {
   try {
-    const result1 = await pool.query(
+    const result1 = await client.query(
       'SELECT perimeter FROM projects WHERE id = $1',
       [projectId1]
     );
-    const result2 = await pool.query(
+    const result2 = await client.query(
       'SELECT perimeter FROM projects WHERE id = $1',
       [projectId2]
     );
@@ -74,7 +74,7 @@ const mergeProjects = async (projectId1, projectId2) => {
 
     //Create a new project with the merged perimeter
     const newProjectName = `Merged Project (${projectId1}-${projectId2})`;
-    const createResult = await pool.query(
+    const createResult = await client.query(
       'INSERT INTO projects (name, perimeter) VALUES ($1, $2) RETURNING *',
       [newProjectName, JSON.stringify(mergedGeoJSON)]
     );
@@ -87,7 +87,7 @@ const mergeProjects = async (projectId1, projectId2) => {
 };
 
 const getDepartment = async (id) => {
-  const result = await pool.query(
+  const result = await client.query(
     'SELECT perimeter FROM projects WHERE id = $1',
     [id]
   );
